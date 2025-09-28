@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import BalanceTable from "@/components/BalanceTable";
+import ExpensesList from "@/components/ExpensesList";
 
 export default function RoomPage() {
   const { code } = useParams();
@@ -223,28 +224,7 @@ export default function RoomPage() {
             Add Expense
           </button>
         </form>
-
-        <div className="mb-6 bg-white/90 backdrop-blur-md shadow-lg rounded p-4">
-          <h2 className="font-bold mb-2 text-gray-800">Expenses</h2>
-          {expenses.length === 0 && (
-            <p className="text-gray-600">No expenses yet</p>
-          )}
-          <ul className="space-y-2">
-            {expenses.map((ex, idx) => (
-              <li
-                key={ex._id ? ex._id.toString() : idx}
-                className="border p-2 rounded-md bg-white/80"
-              >
-                <strong>{ex.description}</strong> - ₹{ex.amount.toFixed(2)}{" "}
-                <br />
-                Added by: {memberMap[ex.addedBy]} <br />
-                Per Head: ₹{ex.perHead.toFixed(2)} split among:{" "}
-                {ex.splitAmong.map((id) => memberMap[id]).join(", ")}
-              </li>
-            ))}
-          </ul>
-        </div>
-
+        <ExpensesList expenses={expenses} memberMap={memberMap} currentUser={currentUser}/>
         <BalanceTable room={room} expenses={expenses} memberMap={memberMap} />
       </div>
     </div>
