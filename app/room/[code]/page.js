@@ -18,7 +18,6 @@ export default function RoomPage() {
 
   const roomUrl = typeof window !== "undefined" ? window.location.href : "";
 
-  // Create a quick map of member IDs to names
   useEffect(() => {
     if (!room) return;
     const map = {};
@@ -28,7 +27,6 @@ export default function RoomPage() {
     setMemberMap(map);
   }, [room]);
 
-  // Load room and expenses, check localStorage for existing user
   useEffect(() => {
     const guestId = localStorage.getItem("guestId");
     const guestName = localStorage.getItem("guestName");
@@ -49,16 +47,13 @@ export default function RoomPage() {
         setSelectedMembers(data.room.members.map((m) => m._id));
 
         if (guestId && data.room.members.find((m) => m._id === guestId)) {
-          // User exists in room
           setCurrentUser({ id: guestId, name: guestName });
         } else {
-          // New user must join
           setShowJoinPrompt(true);
         }
       });
   }, [code]);
 
-  // Join room as new user
   const handleJoinRoom = async () => {
     if (!guestName) return alert("Please enter your name");
 
@@ -72,7 +67,6 @@ export default function RoomPage() {
 
     const data = await res.json();
 
-    // Save guest info to localStorage
     localStorage.setItem("guestId", data.id.toString());
     localStorage.setItem("guestName", data.name);
 
@@ -81,14 +75,12 @@ export default function RoomPage() {
     setShowJoinPrompt(false);
   };
 
-  // Toggle member selection for splitting expense
   const toggleMember = (id) => {
     setSelectedMembers((prev) =>
       prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]
     );
   };
 
-  // Add expense
   const addExpense = async (e) => {
     e.preventDefault();
     if (!form.description || !form.amount)
@@ -113,7 +105,6 @@ export default function RoomPage() {
     setForm({ description: "", amount: "" });
   };
 
-  // Copy room URL
   const copyUrl = () => {
     navigator.clipboard.writeText(roomUrl);
     alert("Room URL copied to clipboard!");
@@ -121,29 +112,41 @@ export default function RoomPage() {
 
   if (showModal)
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-6">
-        <div className="bg-white shadow p-6 rounded w-full max-w-md text-center space-y-4">
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400">
+        <div className="bg-white shadow-lg p-6 rounded w-full max-w-md text-center space-y-6">
           <h2 className="text-xl font-bold">Invalid Room Code</h2>
-          <p>This room does not exist. Save a new room ID or create a room.</p>
+          <p className="text-gray-600">
+            Oops! This room does not exist. Please create a new room or use a
+            valid code.
+          </p>
+          <button
+            onClick={() => (window.location.href = "/")} // Navigate to landing page
+            className="bg-purple-500 text-white p-3 rounded w-full hover:bg-purple-600 transition font-semibold"
+          >
+            Create New Room
+          </button>
         </div>
       </div>
     );
 
   if (showJoinPrompt)
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-6">
-        <div className="bg-white shadow p-6 rounded w-full max-w-md text-center space-y-4">
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400">
+        <div className="bg-white shadow-lg p-6 rounded w-full max-w-md text-center space-y-4">
           <h2 className="text-xl font-bold">Join Room</h2>
-          <p>Please enter your name to join this room</p>
+          <p className="text-gray-600">
+            Enter your name to join this room and start tracking expenses
+            instantly.
+          </p>
           <input
             type="text"
             placeholder="Your Name"
-            className="border p-2 w-full"
+            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
             value={guestName}
             onChange={(e) => setGuestName(e.target.value)}
           />
           <button
-            className="bg-blue-500 text-white p-2 rounded w-full mt-2"
+            className="bg-purple-500 text-white p-2 rounded w-full mt-2 hover:bg-purple-600 transition"
             onClick={handleJoinRoom}
           >
             Join Room
@@ -155,83 +158,95 @@ export default function RoomPage() {
   if (!room) return <p>Loading room...</p>;
 
   return (
-    <div className="p-6 max-w-xl mx-auto space-y-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">
-          {room.name}{" "}
-          {currentUser && (
-            <span className="text-gray-600 text-lg">({currentUser.name})</span>
-          )}
-        </h1>
-        <button
-          className="bg-gray-500 text-white px-2 py-1 rounded"
-          onClick={copyUrl}
+    <div className="min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex justify-center">
+      <div className="w-full max-w-4xl lg:w-7/10 space-y-6">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold text-white">
+            {room.name}{" "}
+            {currentUser && (
+              <span className="text-gray-200 text-lg">
+                ({currentUser.name})
+              </span>
+            )}
+          </h1>
+          <button
+            className="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600 transition"
+            onClick={copyUrl}
+          >
+            Copy Room URL
+          </button>
+        </div>
+        <p className="text-gray-200 mb-4 text-sm">
+          Room Code: <span className="font-semibold">{room.code}</span>
+        </p>
+
+        {/* Add Expense Form */}
+        <form
+          className="mb-6 space-y-3 border p-4 rounded bg-white/90 backdrop-blur-md shadow-lg"
+          onSubmit={addExpense}
         >
-          Copy Room URL
-        </button>
-      </div>
-      <p className="text-gray-600 mb-4">Room Code: {room.code}</p>
+          <h2 className="font-bold text-gray-800 mb-2">Add Expense</h2>
+          <input
+            type="text"
+            placeholder="Description"
+            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+          />
+          <input
+            type="number"
+            placeholder="Amount"
+            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+            value={form.amount}
+            onChange={(e) => setForm({ ...form, amount: e.target.value })}
+          />
 
-      {/* Add Expense Form */}
-      <form onSubmit={addExpense} className="mb-6 space-y-2 border p-4 rounded">
-        <h2 className="font-bold mb-2">Add Expense</h2>
-        <input
-          type="text"
-          placeholder="Description"
-          className="border p-2 w-full"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-        />
-        <input
-          type="number"
-          placeholder="Amount"
-          className="border p-2 w-full"
-          value={form.amount}
-          onChange={(e) => setForm({ ...form, amount: e.target.value })}
-        />
+          <div className="space-y-1 border p-2 rounded-md">
+            <p className="font-bold text-gray-700">Select members to split:</p>
+            {room.members.map((m, idx) => (
+              <label
+                key={m._id ? m._id.toString() : idx}
+                className="flex items-center space-x-2 text-gray-700"
+              >
+                <input
+                  type="checkbox"
+                  value={m._id}
+                  checked={selectedMembers.includes(m._id)}
+                  onChange={() => toggleMember(m._id)}
+                />
+                <span>{m.name}</span>
+              </label>
+            ))}
+          </div>
 
-        <div className="space-y-1 border p-2 rounded">
-          <p className="font-bold">Select members to split:</p>
-          {room.members.map((m, idx) => (
-            <label
-              key={m._id ? m._id.toString() : idx}
-              className="flex items-center space-x-2"
-            >
-              <input
-                type="checkbox"
-                value={m._id}
-                checked={selectedMembers.includes(m._id)}
-                onChange={() => toggleMember(m._id)}
-              />
-              <span>{m.name}</span>
-            </label>
-          ))}
+          <button className="bg-purple-500 text-white p-2 rounded w-full mt-2 hover:bg-purple-600 transition">
+            Add Expense
+          </button>
+        </form>
+
+        <div className="mb-6 bg-white/90 backdrop-blur-md shadow-lg rounded p-4">
+          <h2 className="font-bold mb-2 text-gray-800">Expenses</h2>
+          {expenses.length === 0 && (
+            <p className="text-gray-600">No expenses yet</p>
+          )}
+          <ul className="space-y-2">
+            {expenses.map((ex, idx) => (
+              <li
+                key={ex._id ? ex._id.toString() : idx}
+                className="border p-2 rounded-md bg-white/80"
+              >
+                <strong>{ex.description}</strong> - ₹{ex.amount.toFixed(2)}{" "}
+                <br />
+                Added by: {memberMap[ex.addedBy]} <br />
+                Per Head: ₹{ex.perHead.toFixed(2)} split among:{" "}
+                {ex.splitAmong.map((id) => memberMap[id]).join(", ")}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <button className="bg-blue-500 text-white p-2 rounded w-full mt-2">
-          Add Expense
-        </button>
-      </form>
-
-      <div className="mb-6">
-        <h2 className="font-bold mb-2">Expenses</h2>
-        {expenses.length === 0 && <p>No expenses yet</p>}
-        <ul className="space-y-2">
-          {expenses.map((ex, idx) => (
-            <li
-              key={ex._id ? ex._id.toString() : idx}
-              className="border p-2 rounded"
-            >
-              <strong>{ex.description}</strong> - ₹{ex.amount.toFixed(2)} <br />
-              Added by: {memberMap[ex.addedBy]} <br />
-              Per Head: ₹{ex.perHead.toFixed(2)} split among:{" "}
-              {ex.splitAmong.map((id) => memberMap[id]).join(", ")}
-            </li>
-          ))}
-        </ul>
+        <BalanceTable room={room} expenses={expenses} memberMap={memberMap} />
       </div>
-
-      <BalanceTable room={room} expenses={expenses} memberMap={memberMap} />
     </div>
   );
 }
