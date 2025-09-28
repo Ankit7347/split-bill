@@ -17,6 +17,7 @@ export default function RoomPage() {
   const [memberMap, setMemberMap] = useState({});
 
   const roomUrl = typeof window !== "undefined" ? window.location.href : "";
+
   // Create a quick map of member IDs to names
   useEffect(() => {
     if (!room) return;
@@ -27,8 +28,11 @@ export default function RoomPage() {
     setMemberMap(map);
   }, [room]);
 
-  // Load room and expenses
+  // Load room and expenses, check localStorage for existing user
   useEffect(() => {
+    const guestId = localStorage.getItem("guestId");
+    const guestName = localStorage.getItem("guestName");
+
     fetch(`/api/room/${code}`)
       .then((res) => {
         if (!res.ok) {
@@ -39,18 +43,16 @@ export default function RoomPage() {
       })
       .then((data) => {
         if (!data) return;
+
         setRoom(data.room);
         setExpenses(data.expenses || []);
         setSelectedMembers(data.room.members.map((m) => m._id));
 
-        // Check if user exists in localStorage
-        const guestId = localStorage.getItem("guestId");
-        const guestName = localStorage.getItem("guestName");
-
         if (guestId && data.room.members.find((m) => m._id === guestId)) {
+          // User exists in room
           setCurrentUser({ id: guestId, name: guestName });
         } else {
-          // Prompt for name to join room
+          // New user must join
           setShowJoinPrompt(true);
         }
       });
@@ -69,16 +71,11 @@ export default function RoomPage() {
     if (!res.ok) return alert("Failed to join room");
 
     const data = await res.json();
+
+    // Save guest info to localStorage
     localStorage.setItem("guestId", data.id.toString());
     localStorage.setItem("guestName", data.name);
-    if (
-      guestId &&
-      data.room.members.find((m) => m._id.toString() === guestId)
-    ) {
-      setCurrentUser({ id: guestId, name: guestName });
-    } else {
-      setShowJoinPrompt(true);
-    }
+
     setCurrentUser({ id: data.id, name: data.name });
     setRoom(data.room);
     setShowJoinPrompt(false);
@@ -115,17 +112,6 @@ export default function RoomPage() {
     setExpenses([...expenses, newExpense]);
     setForm({ description: "", amount: "" });
   };
-
-  // Calculate balances
-  const balances = {};
-  expenses.forEach((exp) => {
-    const perHead = exp.perHead;
-    exp.splitAmong.forEach((memberId) => {
-      if (memberId !== exp.addedBy) {
-        balances[memberId] = (balances[memberId] || 0) + perHead;
-      }
-    });
-  });
 
   // Copy room URL
   const copyUrl = () => {
@@ -170,7 +156,6 @@ export default function RoomPage() {
 
   return (
     <div className="p-6 max-w-xl mx-auto space-y-4">
-      {/* Copy Room URL */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">
           {room.name}{" "}
@@ -178,7 +163,6 @@ export default function RoomPage() {
             <span className="text-gray-600 text-lg">({currentUser.name})</span>
           )}
         </h1>
-
         <button
           className="bg-gray-500 text-white px-2 py-1 rounded"
           onClick={copyUrl}
@@ -206,7 +190,6 @@ export default function RoomPage() {
           onChange={(e) => setForm({ ...form, amount: e.target.value })}
         />
 
-        {/* Member selection */}
         <div className="space-y-1 border p-2 rounded">
           <p className="font-bold">Select members to split:</p>
           {room.members.map((m, idx) => (
@@ -230,7 +213,6 @@ export default function RoomPage() {
         </button>
       </form>
 
-      {/* Expense List */}
       <div className="mb-6">
         <h2 className="font-bold mb-2">Expenses</h2>
         {expenses.length === 0 && <p>No expenses yet</p>}
@@ -249,7 +231,6 @@ export default function RoomPage() {
         </ul>
       </div>
 
-      {/* Balance Summary */}
       <BalanceTable room={room} expenses={expenses} memberMap={memberMap} />
     </div>
   );
