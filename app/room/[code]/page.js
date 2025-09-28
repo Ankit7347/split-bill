@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import BalanceTable from "@/components/BalanceTable";
 
 export default function RoomPage() {
   const { code } = useParams();
@@ -68,9 +69,16 @@ export default function RoomPage() {
     if (!res.ok) return alert("Failed to join room");
 
     const data = await res.json();
-    localStorage.setItem("guestId", data.id);
+    localStorage.setItem("guestId", data.id.toString());
     localStorage.setItem("guestName", data.name);
-
+    if (
+      guestId &&
+      data.room.members.find((m) => m._id.toString() === guestId)
+    ) {
+      setCurrentUser({ id: guestId, name: guestName });
+    } else {
+      setShowJoinPrompt(true);
+    }
     setCurrentUser({ id: data.id, name: data.name });
     setRoom(data.room);
     setShowJoinPrompt(false);
@@ -164,7 +172,13 @@ export default function RoomPage() {
     <div className="p-6 max-w-xl mx-auto space-y-4">
       {/* Copy Room URL */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">{room.name}</h1>
+        <h1 className="text-2xl font-bold">
+          {room.name}{" "}
+          {currentUser && (
+            <span className="text-gray-600 text-lg">({currentUser.name})</span>
+          )}
+        </h1>
+
         <button
           className="bg-gray-500 text-white px-2 py-1 rounded"
           onClick={copyUrl}
@@ -221,8 +235,11 @@ export default function RoomPage() {
         <h2 className="font-bold mb-2">Expenses</h2>
         {expenses.length === 0 && <p>No expenses yet</p>}
         <ul className="space-y-2">
-          {expenses.map((ex) => (
-            <li key={ex._id ? ex._id.toString() : idx} className="border p-2 rounded">
+          {expenses.map((ex, idx) => (
+            <li
+              key={ex._id ? ex._id.toString() : idx}
+              className="border p-2 rounded"
+            >
               <strong>{ex.description}</strong> - ₹{ex.amount.toFixed(2)} <br />
               Added by: {memberMap[ex.addedBy]} <br />
               Per Head: ₹{ex.perHead.toFixed(2)} split among:{" "}
@@ -233,23 +250,7 @@ export default function RoomPage() {
       </div>
 
       {/* Balance Summary */}
-      <div>
-        <h2 className="font-bold mb-2">Balances</h2>
-        {room.members.map((m, idx) => (
-          <label
-            key={m._id ? m._id.toString() : idx}
-            className="flex items-center space-x-2"
-          >
-            <input
-              type="checkbox"
-              value={m._id}
-              checked={selectedMembers.includes(m._id)}
-              onChange={() => toggleMember(m._id)}
-            />
-            <span>{m.name}</span>
-          </label>
-        ))}
-      </div>
+      <BalanceTable room={room} expenses={expenses} memberMap={memberMap} />
     </div>
   );
 }
