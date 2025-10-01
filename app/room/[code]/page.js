@@ -15,6 +15,7 @@ export default function RoomPage() {
   const [showModal, setShowModal] = useState(false); // invalid room
   const [showJoinPrompt, setShowJoinPrompt] = useState(false); // new user not in room
   const [guestName, setGuestName] = useState("");
+  const [guestId, setGuestId] = useState("");
   const [memberMap, setMemberMap] = useState({});
 
   const roomUrl = typeof window !== "undefined" ? window.location.href : "";
@@ -31,7 +32,7 @@ export default function RoomPage() {
   useEffect(() => {
     const guestId = localStorage.getItem("guestId");
     const guestName = localStorage.getItem("guestName");
-
+    setGuestId(guestId);
     fetch(`/api/room/${code}`)
       .then((res) => {
         if (!res.ok) {
@@ -42,12 +43,15 @@ export default function RoomPage() {
       })
       .then((data) => {
         if (!data) return;
-
-        setRoom(data.room);
+        const normalizedMembers = data.room.members.map((m) => ({
+          ...m,
+          _id: m._id || m.id, // ensure _id always exists
+        }));
+        setRoom({ ...data.room, members: normalizedMembers });
         setExpenses(data.expenses || []);
-        setSelectedMembers(data.room.members.map((m) => m._id));
+        setSelectedMembers(normalizedMembers.map((m) => m._id));
 
-        if (guestId && data.room.members.find((m) => m._id === guestId)) {
+        if (guestId && normalizedMembers.find((m) => m._id === guestId)) {
           setCurrentUser({ id: guestId, name: guestName });
         } else {
           setShowJoinPrompt(true);
@@ -56,23 +60,26 @@ export default function RoomPage() {
   }, [code]);
 
   const handleJoinRoom = async () => {
-    if (!guestName) return alert("Please enter your name");
+    if (!guestName || guestName=="") return alert("Please enter your name");
 
     const res = await fetch("/api/room/join", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, name: guestName }),
+      body: JSON.stringify({ roomCode:code,guestId,guestName }),
     });
 
     if (!res.ok) return alert("Failed to join room");
 
     const data = await res.json();
-
+    const normalizedMembers = data.room.members.map((m) => ({
+      ...m,
+      _id: m._id || m.id, // ensure _id always exists
+    }));
     localStorage.setItem("guestId", data.id.toString());
     localStorage.setItem("guestName", data.name);
 
     setCurrentUser({ id: data.id, name: data.name });
-    setRoom(data.room);
+    setRoom({ ...data.room, members: normalizedMembers });
     setShowJoinPrompt(false);
   };
 
@@ -160,7 +167,7 @@ export default function RoomPage() {
 
   return (
     <div className="min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex justify-center">
-      <div className="w-full max-w-4xl lg:w-7/10 space-y-6">
+      <div className="w-full max-w-5xl lg:w-7/10 space-y-6">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-white">
             {room.name}{" "}
