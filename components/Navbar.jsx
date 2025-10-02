@@ -11,7 +11,8 @@ export default function Navbar() {
       {/* Desktop Menu */}
       <div className="hidden md:flex space-x-4 items-center">
         <a href="/" className="hover:underline">Home</a>
-        <a href="/register" className="hover:underline">Register</a>
+  <a href="/register" className="hover:underline">Register</a>
+  <a href="/login" className="hover:underline">Login</a>
         <a href="/guest" className="hover:underline">GuestMode</a>
         <a href="/room/create" className="hover:underline">Create Room</a>
         <a href="/contact" className="hover:underline">Contact</a>
@@ -38,6 +39,7 @@ export default function Navbar() {
         <div className="absolute top-full left-0 w-full bg-gray-900 text-white shadow-lg z-40 flex flex-col items-center py-4 animate-fadeIn">
           <a href="/" className="py-2 px-6 w-full text-center hover:bg-gray-800" onClick={() => setMenuOpen(false)}>Home</a>
           <a href="/register" className="py-2 px-6 w-full text-center hover:bg-gray-800" onClick={() => setMenuOpen(false)}>Register</a>
+          <a href="/login" className="py-2 px-6 w-full text-center hover:bg-gray-800" onClick={() => setMenuOpen(false)}>Login</a>
           <a href="/guest" className="py-2 px-6 w-full text-center hover:bg-gray-800" onClick={() => setMenuOpen(false)}>GuestMode</a>
           <a href="/room/create" className="py-2 px-6 w-full text-center hover:bg-gray-800" onClick={() => setMenuOpen(false)}>Create Room</a>
           <a href="/contact" className="py-2 px-6 w-full text-center hover:bg-gray-800" onClick={() => setMenuOpen(false)}>Contact</a>
