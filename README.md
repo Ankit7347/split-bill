@@ -1,36 +1,119 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+---
 
-First, run the development server:
+# ⚡ Next.js + Tailwind + shadcn/ui Setup Guide (Ubuntu)
+
+## 1. Install Node.js with NVM
+
+```bash
+# Install NVM (Node Version Manager)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+source ~/.nvm/nvm.sh
+
+# Install Node.js (latest stable)
+nvm install 22
+
+# Verify installation
+node -v
+npm -v
+```
+
+---
+
+## 2. Create a New Next.js App
+
+```bash
+# Create a new Next.js project (replace `my-app` with your project name)
+npx create-next-app@latest my-app
+
+# Go into project folder
+cd my-app
+```
+
+---
+
+## 3. Install Tailwind CSS
+
+```bash
+# Install TailwindCSS + PostCSS + Autoprefixer
+npm install -D tailwindcss postcss autoprefixer
+
+# Initialize Tailwind config
+npx tailwindcss init -p
+```
+
+---
+
+## 4. Setup shadcn/ui
+
+### Install dependencies
+
+```bash
+npm install @radix-ui/react-icons class-variance-authority tailwind-variants tailwindcss-animate
+```
+
+### Initialize shadcn/ui
+
+```bash
+npx shadcn@latest init
+```
+
+👉 This creates a `components` directory where shadcn UI components will live.
+
+---
+
+## 5. Add shadcn/ui Components
+
+You can add individual components. Examples:
+
+```bash
+# Buttons
+npx shadcn@latest add button
+
+# Cards
+npx shadcn@latest add card
+
+# Input fields
+npx shadcn@latest add input
+
+# Avatars
+npx shadcn@latest add avatar
+
+# Dialogs
+npx shadcn@latest add dialog
+
+# Dropdown Menu
+npx shadcn@latest add dropdown-menu
+
+# Menubar
+npx shadcn@latest add menubar
+
+# Navigation Menu
+npx shadcn@latest add navigation-menu
+
+# Select
+npx shadcn@latest add select
+
+# Tabs
+npx shadcn@latest add tabs
+
+# Toast (notifications)
+npx shadcn@latest add toast
+
+# Tooltip
+npx shadcn@latest add tooltip
+```
+
+👉 You can add as many as you need.
+
+---
+
+## 6. Run the App
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open 👉 `http://localhost:3000`
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
