@@ -19,7 +19,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-md md:max-w-lg lg:max-w-xl mx-auto">
             <a
-              href="//"
+              href="/room/create"
               className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-2xl shadow-lg text-lg sm:text-xl transition"
             >
               Create Room
@@ -337,7 +337,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-md md:max-w-lg lg:max-w-xl mx-auto">
             <a
-              href="//"
+              href="/room/create"
               className="bg-white/80 hover:bg-white text-purple-600 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-2xl shadow-lg text-lg sm:text-xl transition"
             >
               Create Room
