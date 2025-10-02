@@ -1,142 +1,358 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export default function HomePage() {
-  const router = useRouter();
-  const [guestName, setGuestName] = useState("");
-  const [roomCode, setRoomCode] = useState("");
-
-  // Auto-create guest user on first load if not exists
-  useEffect(() => {
-    const existingGuestId = localStorage.getItem("guestId");
-    const existingGuestName = localStorage.getItem("guestName");
-
-    if (!existingGuestId) {
-      // Generate temporary guest name
-      const tempName = "Guest_" + Math.floor(Math.random() * 10000);
-      fetch("/api/guest", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: tempName }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          localStorage.setItem("guestId", data.id);
-          localStorage.setItem("guestName", data.name);
-          setGuestName(data.name);
-        })
-        .catch(console.error);
-    } else {
-      setGuestName(existingGuestName);
-    }
-  }, []);
-
-  // Handle creating guest / entering room
-  const handleGuest = async () => {
-    if (!guestName) return alert("Please enter your name");
-
-    const res = await fetch("/api/guest", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: guestName }),
-    });
-
-    if (!res.ok) return alert("Guest creation failed");
-
-    const data = await res.json();
-    localStorage.setItem("guestId", data.id);
-    localStorage.setItem("guestName", data.name);
-    router.push(`/room/${data.guestRoom}`);
-  };
-
-  const handleJoinRoom = () => {
-    if (!roomCode) return alert("Please enter room code");
-    router.push(`/room/${roomCode}`);
-  };
-
   return (
     <>
-      <Navbar/>
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400">
-        <div className="flex-grow flex flex-col items-center justify-center p-6">
-          <Card className="max-w-lg w-full bg-white/90 backdrop-blur-md shadow-2xl border border-white/20 rounded-3xl animate-fadeIn">
-            <CardContent className="flex flex-col items-center space-y-6 p-8">
-              {/* Hero SVG */}
+      <Navbar />
+      <main className="flex flex-col min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400">
+        {/* Hero Section */}
+        <section className="flex flex-col items-center justify-center py-16 md:py-24 px-4 sm:px-6 text-center w-full">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white drop-shadow mb-6 animate-fadeIn">
+            Split Expenses, Simplified
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-8 max-w-xl md:max-w-2xl animate-fadeIn">
+            Easily split bills, track group expenses, and settle up with
+            friends, roommates, or classmates. No login required!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-md md:max-w-lg lg:max-w-xl mx-auto">
+            <a
+              href="/room/create"
+              className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-2xl shadow-lg text-lg sm:text-xl transition"
+            >
+              Create Room
+            </a>
+            <a
+              href="/guest"
+              className="bg-white/80 hover:bg-white text-pink-600 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-2xl shadow-lg text-lg sm:text-xl transition"
+            >
+              Try Guest Mode
+            </a>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="py-16 md:py-24 px-4 sm:px-6 bg-white/30 backdrop-blur-md flex flex-col items-center w-full">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-700 mb-8 md:mb-10">
+            Features
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 w-full max-w-2xl sm:max-w-3xl md:max-w-5xl lg:max-w-6xl">
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-36 h-36 text-pink-500 animate-bounce"
+                className="w-16 h-16 text-pink-500 mb-4"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="4"
-                  strokeWidth={2}
+                <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 0V4m0 16v-4m8-4h-4m-8 0H4"
                 />
-                <line x1="12" y1="4" x2="12" y2="8" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"/>
-                <line x1="12" y1="16" x2="12" y2="20" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"/>
-                <line x1="4" y1="12" x2="8" y2="12" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"/>
-                <line x1="16" y1="12" x2="20" y2="12" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-
-              <h1 className="text-4xl font-extrabold text-gray-800 text-center drop-shadow-md">
-                Expense Splitter
-              </h1>
-              <p className="text-gray-600 text-center text-lg">
-                Easily split bills and track expenses with friends. Create or join a room and manage expenses in seconds!
+              <h3 className="text-2xl font-bold mb-2 text-gray-800">
+                No Login Needed
+              </h3>
+              <p className="text-gray-600 text-center">
+                Start splitting expenses instantly. Create a room and invite
+                friends—no sign-up required.
               </p>
-
-              {/* Guest Name Input */}
-              <input
-                type="text"
-                placeholder="Enter your name"
-                className="border border-gray-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all duration-300"
-                value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
-              />
-
-              {/* Continue as Guest */}
-              <Button
-                className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                onClick={handleGuest}
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <svg
+                className="w-16 h-16 text-purple-500 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                Continue as Guest
-              </Button>
-
-              <div className="flex items-center w-full space-x-2">
-                <input
-                  type="text"
-                  placeholder="Enter room code"
-                  className="border border-gray-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300"
-                  value={roomCode}
-                  onChange={(e) => setRoomCode(e.target.value)}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 9V7a5 5 0 00-10 0v2a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2z"
                 />
-                <Button
-                  className="bg-purple-500 hover:bg-purple-600 text-white font-semibold transition-all duration-300"
-                  onClick={handleJoinRoom}
-                >
-                  Join
-                </Button>
-              </div>
-
-              <p className="text-gray-500 text-sm text-center mt-2">
-                No sign-up required. Start managing shared expenses instantly!
+              </svg>
+              <h3 className="text-2xl font-bold mb-2 text-gray-800">
+                Room Validity
+              </h3>
+              <p className="text-gray-600 text-center">
+                Rooms are valid for 45 days, with 15 extra days to settle up.
+                Perfect for trips, events, or short-term groups.
               </p>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <svg
+                className="w-16 h-16 text-orange-500 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 17v-2a4 4 0 018 0v2m-8 0a4 4 0 01-8 0v-2a4 4 0 018 0v2zm8 0v-2a4 4 0 00-8 0v2"
+                />
+              </svg>
+              <h3 className="text-2xl font-bold mb-2 text-gray-800">
+                Smart Splitting
+              </h3>
+              <p className="text-gray-600 text-center">
+                Add expenses, select who pays, and split among members. See who
+                owes what, instantly.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works Section */}
+        <section className="py-16 md:py-24 px-4 sm:px-6 flex flex-col items-center bg-gradient-to-r from-pink-200 via-purple-100 to-orange-100 w-full">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-pink-600 mb-8 md:mb-10">
+            How It Works
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 w-full max-w-2xl sm:max-w-3xl md:max-w-5xl lg:max-w-6xl">
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <span className="text-5xl font-bold text-pink-500 mb-4">1</span>
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                Create or Join Room
+              </h3>
+              <p className="text-gray-600 text-center">
+                Start by creating a new room or joining an existing one with a
+                code.
+              </p>
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <span className="text-5xl font-bold text-purple-500 mb-4">2</span>
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                Add Expenses
+              </h3>
+              <p className="text-gray-600 text-center">
+                Enter expense details, select who paid, and choose members to
+                split the cost.
+              </p>
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <span className="text-5xl font-bold text-orange-500 mb-4">3</span>
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                Settle Up
+              </h3>
+              <p className="text-gray-600 text-center">
+                See balances and settle up easily. Track who owes what and keep
+                things fair.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Benefits / Testimonials Section */}
+        <section className="py-16 md:py-24 px-4 sm:px-6 flex flex-col items-center bg-white/40 backdrop-blur-md w-full">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-700 mb-8 md:mb-10">
+            Why Choose Expense Splitter?
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-10 w-full max-w-xl sm:max-w-2xl md:max-w-4xl lg:max-w-5xl">
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                Fast & Easy
+              </h3>
+              <p className="text-gray-600 text-center">
+                No registration, no hassle. Get started in seconds and manage
+                group expenses effortlessly.
+              </p>
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                Secure & Private
+              </h3>
+              <p className="text-gray-600 text-center">
+                Your data is never shared. Guest mode keeps things simple and
+                private for short-term use.
+              </p>
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                Perfect for Groups
+              </h3>
+              <p className="text-gray-600 text-center">
+                Trips, events, roommates, classmates—split bills and track
+                spending for any group.
+              </p>
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                Detailed Tracking
+              </h3>
+              <p className="text-gray-600 text-center">
+                See monthly summaries, member balances, and expense history at a
+                glance.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* With Login Benefits Section */}
+        <section className="py-16 md:py-24 px-4 sm:px-6 flex flex-col items-center bg-gradient-to-r from-purple-100 via-pink-100 to-orange-100 w-full">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-pink-600 mb-8 md:mb-10">
+            With Login: Unlock More Power
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 w-full max-w-xl sm:max-w-2xl md:max-w-4xl lg:max-w-6xl">
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <svg
+                className="w-14 h-14 text-purple-500 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 17v-2a4 4 0 018 0v2m-8 0a4 4 0 01-8 0v-2a4 4 0 018 0v2zm8 0v-2a4 4 0 00-8 0v2"
+                />
+              </svg>
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                Charts & Analytics
+              </h3>
+              <p className="text-gray-600 text-center">
+                Visualize your expenses with interactive charts. Track spending
+                trends, monthly breakdowns, and more.
+              </p>
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <svg
+                className="w-14 h-14 text-pink-500 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 0V4m0 16v-4m8-4h-4m-8 0H4"
+                />
+              </svg>
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                Academic & Semester Reports
+              </h3>
+              <p className="text-gray-600 text-center">
+                Get academic year-wise and semester-wise expense summaries.
+                Perfect for students and long-term tracking.
+              </p>
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <svg
+                className="w-14 h-14 text-orange-500 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 9V7a5 5 0 00-10 0v2a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2z"
+                />
+              </svg>
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                Secure Cloud Data
+              </h3>
+              <p className="text-gray-600 text-center">
+                Access your expense history anytime, anywhere. Your data is
+                securely stored and always available.
+              </p>
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <svg
+                className="w-14 h-14 text-green-500 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 20l9-5-9-5-9 5 9 5z"
+                />
+              </svg>
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                One-Glance Graphs
+              </h3>
+              <p className="text-gray-600 text-center">
+                See your total expenses, balances, and trends in a single glance
+                with beautiful graphs.
+              </p>
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <svg
+                className="w-14 h-14 text-blue-500 mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01"
+                />
+              </svg>
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                Advanced Filters
+              </h3>
+              <p className="text-gray-600 text-center">
+                Filter expenses by category, member, or date. Find exactly what
+                you need, fast.
+              </p>
+            </div>
+            <div className="bg-white/90 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+              <h3 className="text-xl font-bold mb-2 text-gray-800">
+                And More!
+              </h3>
+              <p className="text-gray-600 text-center">
+                With login, unlock more features and future updates for power
+                users.
+              </p>
+            </div>
+          </div>
+          <a
+            href="/login"
+            className="mt-8 inline-block py-3 px-8 rounded-2xl bg-purple-600 text-white font-bold text-lg shadow-lg hover:bg-purple-700 transition"
+          >
+            Login & Explore
+          </a>
+        </section>
+
+        {/* Call to Action Section */}
+        <section className="py-16 md:py-24 px-4 sm:px-6 flex flex-col items-center justify-center bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 w-full">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6">
+            Ready to Split?
+          </h2>
+          <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 md:mb-8 max-w-xl md:max-w-2xl text-center">
+            Start a room now or try guest mode. Experience hassle-free expense
+            splitting!
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center w-full max-w-md md:max-w-lg lg:max-w-xl mx-auto">
+            <a
+              href="/room/create"
+              className="bg-white/80 hover:bg-white text-purple-600 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-2xl shadow-lg text-lg sm:text-xl transition"
+            >
+              Create Room
+            </a>
+            <a
+              href="/guest"
+              className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-2xl shadow-lg text-lg sm:text-xl transition"
+            >
+              Try Guest Mode
+            </a>
+          </div>
+        </section>
+
         <Footer />
-      </div>
+      </main>
     </>
   );
 }
