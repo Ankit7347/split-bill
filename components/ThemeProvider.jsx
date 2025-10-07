@@ -51,7 +51,6 @@ const icons = {
 
 export default function ThemeProvider({ children }) {
 	const [theme, setTheme] = useState('system');
-	const [showOptions, setShowOptions] = useState(false);
 	const [isSpinning, setIsSpinning] = useState(false);
 
 	// Load saved theme & apply
@@ -84,20 +83,19 @@ export default function ThemeProvider({ children }) {
 		setTheme(newTheme);
 		localStorage.setItem('theme', newTheme);
 		applyTheme(newTheme);
-		setShowOptions(false);
 	};
 
-	// Handle button tap: spin + toggle options
+	// Cycle theme order
+	const themeOrder = ['light', 'dark', 'system'];
 	const handleToggle = () => {
 		setIsSpinning(true);
 		setTimeout(() => {
-			setShowOptions(!showOptions);
+			const currentIdx = themeOrder.indexOf(theme);
+			const nextTheme = themeOrder[(currentIdx + 1) % themeOrder.length];
+			setNewTheme(nextTheme);
 			setIsSpinning(false);
 		}, 400); // spin duration
 	};
-
-	// The two other themes to show in options (exclude current theme)
-	const otherThemes = ['light', 'dark', 'system'].filter((t) => t !== theme);
 
 
 	return (
@@ -109,27 +107,13 @@ export default function ThemeProvider({ children }) {
 				{/* Main theme button */}
 				<button
 					onClick={handleToggle}
-					aria-label="Toggle theme options"
+					aria-label="Switch theme"
 					title={`Current theme: ${theme}`}
-					className={`w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-800 shadow-lg flex items-center justify-center  transform transition-transform duration-400 ${isSpinning ? 'animate-spin' : ''}`}
+					className={`w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-800 shadow-lg flex items-center justify-center transform transition-transform duration-400 ${isSpinning ? 'animate-spin' : ''}`}
 					style={{ animationTimingFunction: 'ease-in-out' }}
 				>
 					{icons[theme]}
 				</button>
-
-				{/* Other theme options, vertical stack */}
-				{showOptions &&
-					otherThemes.map((t) => (
-						<button
-							key={t}
-							onClick={() => setNewTheme(t)}
-							aria-label={`Set theme to ${t}`}
-							title={`Set theme: ${t}`}
-							className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-800 shadow-lg flex items-center justify-center hover:ring-2 hover:ring-blue-500 transition"
-						>
-							{icons[t]}
-						</button>
-					))}
 			</div>
 
 			{children}

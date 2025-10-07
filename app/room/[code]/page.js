@@ -121,15 +121,15 @@ export default function RoomPage() {
   if (showModal)
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400">
-        <div className="bg-white shadow-lg p-6 rounded w-full max-w-md text-center space-y-6">
-          <h2 className="text-xl font-bold">Invalid Room Code</h2>
-          <p className="text-gray-600">
+    <div className="bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg p-6 rounded w-full max-w-md text-center space-y-6">
+          <h2 className="text-xl font-bold dark:text-gray-100">Invalid Room Code</h2>
+          <p className="text-gray-600 dark:text-gray-300">
             Oops! This room does not exist. Please create a new room or use a
             valid code.
           </p>
           <button
             onClick={() => (window.location.href = "/")} // Navigate to landing page
-            className="bg-purple-500 text-white p-3 rounded w-full hover:bg-purple-600 transition font-semibold"
+            className="bg-purple-500 text-white p-3 rounded w-full hover:bg-purple-600 transition font-semibold dark:bg-purple-700 dark:hover:bg-purple-800"
           >
             Create New Room
           </button>
@@ -140,21 +140,21 @@ export default function RoomPage() {
   if (showJoinPrompt)
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400">
-        <div className="bg-white shadow-lg p-6 rounded w-full max-w-md text-center space-y-4">
-          <h2 className="text-xl font-bold">Join Room</h2>
-          <p className="text-gray-600">
+    <div className="bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg p-6 rounded w-full max-w-md text-center space-y-4">
+          <h2 className="text-xl font-bold dark:text-gray-100">Join Room</h2>
+          <p className="text-gray-600 dark:text-gray-300">
             Enter your name to join this room and start tracking expenses
             instantly.
           </p>
           <input
             type="text"
             placeholder="Your Name"
-            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
             value={guestName}
             onChange={(e) => setGuestName(e.target.value)}
           />
           <button
-            className="bg-purple-500 text-white p-2 rounded w-full mt-2 hover:bg-purple-600 transition"
+            className="bg-purple-500 text-white p-2 rounded w-full mt-2 hover:bg-purple-600 transition dark:bg-purple-700 dark:hover:bg-purple-800"
             onClick={handleJoinRoom}
           >
             Join Room
@@ -166,55 +166,55 @@ export default function RoomPage() {
   if (!room) return <p>Loading room...</p>;
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex justify-center">
+    <div className="min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex justify-center dark:bg-gradient-to-br dark:from-gray-900 dark:via-purple-900 dark:to-black">
       <div className="w-full max-w-5xl lg:w-7/10 space-y-6">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold text-white">
-            {room.name}{" "}
+          <h1 className="text-2xl font-bold text-white dark:text-gray-100">
+            {room.name} {" "}
             {currentUser && (
-              <span className="text-gray-200 text-lg">
+              <span className="text-gray-200 text-lg dark:text-gray-300">
                 ({currentUser.name})
               </span>
             )}
           </h1>
           <button
-            className="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600 transition"
+            className="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600 transition dark:bg-gray-800 dark:hover:bg-gray-700"
             onClick={copyUrl}
           >
             Copy Room URL
           </button>
         </div>
-        <p className="text-gray-200 mb-4 text-sm">
-          Room Code: <span className="font-semibold">{room.code}</span>
+        <p className="text-gray-200 mb-4 text-sm dark:text-gray-300">
+          Room Code: <span className="font-semibold dark:text-gray-100">{room.code}</span>
         </p>
 
         {/* Add Expense Form */}
         <form
-          className="mb-6 space-y-3 border p-4 rounded bg-white/90 backdrop-blur-md shadow-lg"
+          className="mb-6 space-y-3 border p-4 rounded bg-white/90 backdrop-blur-md shadow-lg dark:bg-gray-900 dark:border-gray-700"
           onSubmit={addExpense}
         >
-          <h2 className="font-bold text-gray-800 mb-2">Add Expense</h2>
+          <h2 className="font-bold text-gray-800 mb-2 dark:text-gray-100">Add Expense</h2>
           <input
             type="text"
             placeholder="Description"
-            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
           <input
             type="number"
             placeholder="Amount"
-            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
+            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
             value={form.amount}
             onChange={(e) => setForm({ ...form, amount: e.target.value })}
           />
 
-          <div className="space-y-1 border p-2 rounded-md">
-            <p className="font-bold text-gray-700">Select members to split:</p>
+          <div className="space-y-1 border p-2 rounded-md dark:bg-gray-900 dark:border-gray-700">
+            <p className="font-bold text-gray-700 dark:text-gray-100">Select members to split:</p>
             {room.members.map((m, idx) => (
               <label
                 key={m._id ? m._id.toString() : idx}
-                className="flex items-center space-x-2 text-gray-700"
+                className="flex items-center space-x-2 text-gray-700 dark:text-gray-100"
               >
                 <input
                   type="checkbox"
@@ -227,7 +227,7 @@ export default function RoomPage() {
             ))}
           </div>
 
-          <button className="bg-purple-500 text-white p-2 rounded w-full mt-2 hover:bg-purple-600 transition">
+          <button className="bg-purple-500 text-white p-2 rounded w-full mt-2 hover:bg-purple-600 transition dark:bg-purple-700 dark:hover:bg-purple-800">
             Add Expense
           </button>
         </form>

@@ -35,14 +35,14 @@ export default function ContactCard({ onSuccess }) {
   };
 
   return (
-    <Card className="max-w-md w-full mx-auto bg-white/90 backdrop-blur-md shadow-2xl border border-white/20 rounded-3xl">
+    <Card className="max-w-md w-full mx-auto bg-white/90 dark:bg-gray-900 dark:border-gray-700 backdrop-blur-md shadow-2xl border border-white/20 dark:border-gray-700 rounded-3xl">
       <CardContent className="p-8 flex flex-col items-center space-y-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Contact Us</h2>
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Contact Us</h2>
         <form className="w-full flex flex-col space-y-4" onSubmit={handleSubmit}>
           <input
             type="text"
             placeholder="Your Name"
-            className="border border-gray-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className="border border-gray-300 dark:border-gray-700 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-purple-400 dark:bg-gray-800 dark:text-gray-100"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -50,28 +50,28 @@ export default function ContactCard({ onSuccess }) {
           <input
             type="email"
             placeholder="Your Email"
-            className="border border-gray-300 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className="border border-gray-300 dark:border-gray-700 rounded-xl p-3 w-full focus:outline-none focus:ring-2 focus:ring-purple-400 dark:bg-gray-800 dark:text-gray-100"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
           <textarea
             placeholder="Your Message"
-            className="border border-gray-300 rounded-xl p-3 w-full h-32 resize-none focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className="border border-gray-300 dark:border-gray-700 rounded-xl p-3 w-full h-32 resize-none focus:outline-none focus:ring-2 focus:ring-purple-400 dark:bg-gray-800 dark:text-gray-100"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             required
           />
           <Button
             type="submit"
-            className="bg-purple-500 hover:bg-purple-600 text-white font-semibold transition-all duration-300"
+            className="bg-purple-500 hover:bg-purple-600 text-white font-semibold transition-all duration-300 dark:bg-purple-700 dark:hover:bg-purple-800"
             disabled={loading}
           >
             {loading ? "Sending..." : "Send Message"}
           </Button>
         </form>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        {success && <p className="text-green-600 text-sm">Message sent! We'll get back to you soon.</p>}
+        {error && <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>}
+        {success && <p className="text-green-600 dark:text-green-400 text-sm">Message sent! We'll get back to you soon.</p>}
       </CardContent>
     </Card>
   );

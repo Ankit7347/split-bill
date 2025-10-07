@@ -89,7 +89,7 @@ export default function BalanceTable({ room, expenses, memberMap }) {
   }
 
   return (
-    <div className="mt-6 space-y-4">
+  <div className="mt-6 space-y-4">
       {/* Month dropdown selector */}
       <div className="mb-4">
         <label className="font-medium mr-2">Select Month:</label>
@@ -110,14 +110,14 @@ export default function BalanceTable({ room, expenses, memberMap }) {
       </div>
       {/* Monthly Expense & Member Spend Table for selected month */}
       {monthKey && (
-        <div className="border rounded shadow p-4 bg-white">
-          <h2 className="font-bold mb-2 text-lg">Monthly Summary</h2>
-          <p className="mb-1 text-sm text-gray-700">
+  <div className="border rounded shadow p-4 bg-white dark:bg-gray-900 dark:border-gray-700">
+          <h2 className="font-bold mb-2 text-lg dark:text-gray-100">Monthly Summary</h2>
+          <p className="mb-1 text-sm text-gray-700 dark:text-gray-300">
             Month: <span className="font-semibold">{new Date(year, month).toLocaleString('default', { month: 'long' })} {year}</span>
           </p>
           {/* Who spent how much */}
           <table className="w-full border text-sm mb-2">
-            <thead className="bg-gray-100">
+            <thead className="bg-gray-100 dark:bg-gray-800">
               <tr>
                 <th className="border px-2 py-1 text-left">Member</th>
                 <th className="border px-2 py-1 text-right">Spent (₹)</th>
@@ -129,26 +129,26 @@ export default function BalanceTable({ room, expenses, memberMap }) {
                 const spent = monthlyExpenses.filter(e => e.addedBy === m._id).reduce((sum, e) => sum + e.amount, 0);
                 return (
                   <tr key={m._id}>
-                    <td className="border px-2 py-1">{m.name}</td>
-                    <td className="border px-2 py-1 text-right">{spent.toFixed(2)}</td>
+                    <td className="border px-2 py-1 dark:text-gray-100">{m.name}</td>
+                    <td className="border px-2 py-1 text-right dark:text-gray-100">{spent.toFixed(2)}</td>
                   </tr>
                 );
               })}
               {/* Total row */}
               <tr>
-                <td className="border px-2 py-1 font-bold">Total</td>
-                <td className="border px-2 py-1 text-right font-bold">{totalMonthlyExpense.toFixed(2)}</td>
+                <td className="border px-2 py-1 font-bold dark:text-gray-100">Total</td>
+                <td className="border px-2 py-1 text-right font-bold dark:text-gray-100">{totalMonthlyExpense.toFixed(2)}</td>
               </tr>
               {/* Monthly average row */}
               <tr>
-                <td className="border px-2 py-1 font-bold">Monthly Avg</td>
-                <td className="border px-2 py-1 text-right font-bold">{(totalMonthlyExpense / room.members.length).toFixed(2)}</td>
+                <td className="border px-2 py-1 font-bold dark:text-gray-100">Monthly Avg</td>
+                <td className="border px-2 py-1 text-right font-bold dark:text-gray-100">{(totalMonthlyExpense / room.members.length).toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
           {/* Monthly Avg Balance Table */}
           <table className="w-full border text-sm">
-            <thead className="bg-gray-100">
+            <thead className="bg-gray-100 dark:bg-gray-800">
               <tr>
                 <th className="border px-2 py-1 text-left">Member</th>
                 <th className="border px-2 py-1 text-right">Monthly Avg Balance (₹)</th>
@@ -157,14 +157,14 @@ export default function BalanceTable({ room, expenses, memberMap }) {
             <tbody>
               {room.members.map((m) => (
                 <tr key={m._id}>
-                  <td className="border px-2 py-1">{m.name}</td>
+                  <td className="border px-2 py-1 dark:text-gray-100">{m.name}</td>
                   <td
-                    className={`border px-2 py-1 text-right ${
+                    className={`border px-2 py-1 text-right dark:text-gray-100 ${
                       monthlyBalances[m._id] < 0
-                        ? "text-red-600"
+                        ? "text-red-400 dark:text-red-400"
                         : monthlyBalances[m._id] > 0
-                        ? "text-green-600"
-                        : "text-gray-600"
+                        ? "text-green-500 dark:text-green-400"
+                        : "text-gray-600 dark:text-gray-300"
                     }`}
                   >
                     {monthlyBalances[m._id].toFixed(2)}
@@ -176,10 +176,10 @@ export default function BalanceTable({ room, expenses, memberMap }) {
         </div>
       )}
       {/* Net Balance Table */}
-      <div className="border rounded shadow p-4 bg-white">
-        <h2 className="font-bold mb-2 text-lg">Net Balances</h2>
+  <div className="border rounded shadow p-4 bg-white dark:bg-gray-900 dark:border-gray-700">
+  <h2 className="font-bold mb-2 text-lg dark:text-gray-100">Net Balances</h2>
         <table className="w-full border text-sm">
-          <thead className="bg-gray-100">
+          <thead className="bg-gray-100 dark:bg-gray-800">
             <tr>
               <th className="border px-2 py-1 text-left">Member</th>
               <th className="border px-2 py-1 text-right">Balance (₹)</th>
@@ -188,14 +188,14 @@ export default function BalanceTable({ room, expenses, memberMap }) {
           <tbody>
             {room.members.map((m) => (
               <tr key={m._id}>
-                <td className="border px-2 py-1">{m.name}</td>
+                <td className="border px-2 py-1 dark:text-gray-100">{m.name}</td>
                 <td
-                  className={`border px-2 py-1 text-right ${
+                  className={`border px-2 py-1 text-right dark:text-gray-100 ${
                     netBalances[m._id] < 0
-                      ? "text-red-600"
+                      ? "text-red-400 dark:text-red-400"
                       : netBalances[m._id] > 0
-                      ? "text-green-600"
-                      : "text-gray-600"
+                      ? "text-green-500 dark:text-green-400"
+                      : "text-gray-600 dark:text-gray-300"
                   }`}
                 >
                   {netBalances[m._id].toFixed(2)}
@@ -207,14 +207,14 @@ export default function BalanceTable({ room, expenses, memberMap }) {
       </div>
 
       {/* Settlement Summary */}
-      <div className="border rounded shadow p-4 bg-white">
-        <h2 className="font-bold mb-2 text-lg">Settlements</h2>
+  <div className="border rounded shadow p-4 bg-white dark:bg-gray-900 dark:border-gray-700">
+  <h2 className="font-bold mb-2 text-lg dark:text-gray-100">Settlements</h2>
         {settlements.length === 0 && (
-          <p className="text-gray-600">No settlements needed 🎉</p>
+          <p className="text-gray-600 dark:text-gray-300">No settlements needed 🎉</p>
         )}
         <ul className="space-y-1">
           {settlements.map((s, idx) => (
-            <li key={idx} className="text-sm">
+            <li key={idx} className="text-sm dark:text-gray-100">
               <span className="font-medium">{memberMap[s.from]}</span> pays{" "}
               <span className="font-medium">₹{s.amount.toFixed(2)}</span> to{" "}
               <span className="font-medium">{memberMap[s.to]}</span>

@@ -8,7 +8,7 @@ const PrivacyPolicy = () => {
 		<>
 			<Navbar />
 			<div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-500">
-				<div className="max-w-3xl mt-20 mx-auto p-6 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 transition-colors duration-500 rounded-md shadow-md dark:shadow-lg border border-transparent dark:border-gray-700">
+				<div className="max-w-3xl mt-20 mx-auto p-6 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 transition-colors duration-500 rounded-md shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700">
 					<h1 className="text-2xl font-bold mb-4">Privacy Policy</h1>
 					<p className="mb-4">
 						This Privacy Policy explains how Expense Splitter collects, uses, and protects your personal and expense data when you use our platform.
@@ -43,7 +43,7 @@ const PrivacyPolicy = () => {
 					<h2 className="text-xl font-semibold mb-2">6. Contact Us</h2>
 					<p className="mb-4">
 						If you have any questions about this Privacy Policy, please contact us:
-						<a href="/contact" className="inline-block mt-2 px-6 py-2 bg-blue-600 text-white rounded-full shadow hover:bg-blue-700 transition">
+						<a href="/contact" className="inline-block mt-2 px-6 py-2 bg-blue-600 dark:bg-blue-800 text-white rounded-full shadow hover:bg-blue-700 dark:hover:bg-blue-900 transition">
 							Contact Us
 						</a>
 					</p>
