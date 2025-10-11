@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 
 // Type removed for JS conversion
 
@@ -53,8 +53,8 @@ export default function ThemeProvider({ children }) {
 	const [theme, setTheme] = useState('system');
 	const [isSpinning, setIsSpinning] = useState(false);
 
-	// Load saved theme & apply
-	useEffect(() => {
+	// Load saved theme & apply before paint to prevent flash
+	useLayoutEffect(() => {
 		const saved = localStorage.getItem('theme');
 		const themeToApply = saved || 'system';
 		setTheme(themeToApply);
