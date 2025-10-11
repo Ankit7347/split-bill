@@ -31,7 +31,7 @@ export default function BalanceTable({ room, expenses, memberMap }) {
     const totalMonthlyExpense = monthlyExpenses.reduce((sum, exp) => sum + exp.amount, 0);
     // Monthly balances
     const monthlyBalances = {};
-    room.members.forEach((m) => (monthlyBalances[m._id] = 0));
+    room.members.forEach((m) => (monthlyBalances[m.uuid] = 0));
     monthlyExpenses.forEach((exp) => {
       const perHead = exp.perHead;
       exp.splitAmong.forEach((memberId) => {
@@ -45,7 +45,7 @@ export default function BalanceTable({ room, expenses, memberMap }) {
 
   // 1. Compute net balances
   const netBalances = {};
-  room.members.forEach((m) => (netBalances[m._id] = 0));
+  room.members.forEach((m) => (netBalances[m.uuid] = 0));
 
   expenses.forEach((exp) => {
     const perHead = exp.perHead;
@@ -126,9 +126,9 @@ export default function BalanceTable({ room, expenses, memberMap }) {
             <tbody>
               {room.members.map((m) => {
                 // Sum expenses added by this member for the month
-                const spent = monthlyExpenses.filter(e => e.addedBy === m._id).reduce((sum, e) => sum + e.amount, 0);
+                const spent = monthlyExpenses.filter(e => e.addedBy === m.uuid).reduce((sum, e) => sum + e.amount, 0);
                 return (
-                  <tr key={m._id}>
+                  <tr key={m.uuid}>
                     <td className="border px-2 py-1 dark:text-gray-100">{m.name}</td>
                     <td className="border px-2 py-1 text-right dark:text-gray-100">{spent.toFixed(2)}</td>
                   </tr>
@@ -156,18 +156,18 @@ export default function BalanceTable({ room, expenses, memberMap }) {
             </thead>
             <tbody>
               {room.members.map((m) => (
-                <tr key={m._id}>
+                <tr key={m.uuid}>
                   <td className="border px-2 py-1 dark:text-gray-100">{m.name}</td>
                   <td
                     className={`border px-2 py-1 text-right dark:text-gray-100 ${
-                      monthlyBalances[m._id] < 0
+                      monthlyBalances[m.uuid] < 0
                         ? "text-red-400 dark:text-red-400"
-                        : monthlyBalances[m._id] > 0
+                        : monthlyBalances[m.uuid] > 0
                         ? "text-green-500 dark:text-green-400"
                         : "text-gray-600 dark:text-gray-300"
                     }`}
                   >
-                    {monthlyBalances[m._id].toFixed(2)}
+                    {monthlyBalances[m.uuid].toFixed(2)}
                   </td>
                 </tr>
               ))}
@@ -187,18 +187,18 @@ export default function BalanceTable({ room, expenses, memberMap }) {
           </thead>
           <tbody>
             {room.members.map((m) => (
-              <tr key={m._id}>
+              <tr key={m.uuid}>
                 <td className="border px-2 py-1 dark:text-gray-100">{m.name}</td>
                 <td
                   className={`border px-2 py-1 text-right dark:text-gray-100 ${
-                    netBalances[m._id] < 0
+                    netBalances[m.uuid] < 0
                       ? "text-red-400 dark:text-red-400"
-                      : netBalances[m._id] > 0
+                      : netBalances[m.uuid] > 0
                       ? "text-green-500 dark:text-green-400"
                       : "text-gray-600 dark:text-gray-300"
                   }`}
                 >
-                  {netBalances[m._id].toFixed(2)}
+                  {netBalances[m.uuid].toFixed(2)}
                 </td>
               </tr>
             ))}

@@ -5,18 +5,34 @@ import mongoose from "mongoose";
 const UserSchema = new mongoose.Schema({
   uuid: { type: String, required: true, unique: true },
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  phone: { type: String, required: true },
-  state: { type: String },
-  district: { type: String },
-  className: { type: String }, // For school/college students
-  passwordHash: { type: String, required: true },
-  is_deleted: { type: Boolean, default: false },
-  updated: { type: Date, default: Date.now },
-  role: { type: String, enum: ["student", "superadmin","contentadmin"], default: "student" },
-  competition: { type: String }, // If user is preparing for a competitive exam
+  email: {
+    type: String,
+    required: function () { return !this.isGuest; }, // ❌ not required if guest
+    unique: true,
+  },
+
+  phone: {
+    type: String,
+    required: function () { return !this.isGuest; }, // ❌ not required if guest
+  },
+
+  passwordHash: {
+    type: String,
+    required: function () { return !this.isGuest; }, // ❌ not required if guest
+  },
+
+  state: String,
+  district: String,
+  className: String,
+  isDeleted: { type: Boolean, default: false },
+  role: {
+    type: String,
+    enum: ["student", "superadmin", "contentadmin"],
+    default: "student",
+  },
+  competition: String,
   isGuest: { type: Boolean, default: false },
-});
+}, { timestamps: true });
 
 // Check if model exists before defining (Prevents duplicate model errors)
 export default mongoose.models.User || mongoose.model("User", UserSchema);

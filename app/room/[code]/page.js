@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import BalanceTable from "@/components/BalanceTable";
 import ExpensesList from "@/components/ExpensesList";
+import Loading from "@/components/data-loading/Loading";
 
 export default function RoomPage() {
   const { code } = useParams();
@@ -14,7 +15,9 @@ export default function RoomPage() {
   const [currentUser, setCurrentUser] = useState(null); // guestId + name
   const [showModal, setShowModal] = useState(false); // invalid room
   const [showJoinPrompt, setShowJoinPrompt] = useState(false); // new user not in room
-  const [guestName, setGuestName] = useState("");
+  const [guestName, setGuestName] = useState(() =>
+    typeof window !== "undefined" ? localStorage.getItem("guestName") || "" : ""
+  );
   const [guestId, setGuestId] = useState("");
   const [memberMap, setMemberMap] = useState({});
 
@@ -24,7 +27,7 @@ export default function RoomPage() {
     if (!room) return;
     const map = {};
     room.members.forEach((m) => {
-      map[m._id] = m.name;
+      map[m.uuid] = m.name;
     });
     setMemberMap(map);
   }, [room]);
@@ -45,13 +48,13 @@ export default function RoomPage() {
         if (!data) return;
         const normalizedMembers = data.room.members.map((m) => ({
           ...m,
-          _id: m._id || m.id, // ensure _id always exists
+          _id: m.uuid,
         }));
         setRoom({ ...data.room, members: normalizedMembers });
         setExpenses(data.expenses || []);
-        setSelectedMembers(normalizedMembers.map((m) => m._id));
+        setSelectedMembers(normalizedMembers.map((m) => m.uuid));
 
-        if (guestId && normalizedMembers.find((m) => m._id === guestId)) {
+        if (guestId && normalizedMembers.find((m) => m.uuid === guestId)) {
           setCurrentUser({ id: guestId, name: guestName });
         } else {
           setShowJoinPrompt(true);
@@ -60,12 +63,12 @@ export default function RoomPage() {
   }, [code]);
 
   const handleJoinRoom = async () => {
-    if (!guestName || guestName=="") return alert("Please enter your name");
+    if (!guestName || guestName == "") return alert("Please enter your name");
 
     const res = await fetch("/api/room/join", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ roomCode:code,guestId,guestName }),
+      body: JSON.stringify({ roomCode: code, guestId, guestName }),
     });
 
     if (!res.ok) return alert("Failed to join room");
@@ -73,7 +76,7 @@ export default function RoomPage() {
     const data = await res.json();
     const normalizedMembers = data.room.members.map((m) => ({
       ...m,
-      _id: m._id || m.id, // ensure _id always exists
+      _id: m.uuid,
     }));
     localStorage.setItem("guestId", data.id.toString());
     localStorage.setItem("guestName", data.name);
@@ -98,13 +101,13 @@ export default function RoomPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        roomId: room._id,
+        roomId: room.uuid,
         addedBy: currentUser.id,
         description: form.description,
         amount: Number(form.amount),
         splitAmong: selectedMembers.length
           ? selectedMembers
-          : room.members.map((m) => m._id),
+          : room.members.map((m) => m.uuid),
       }),
     });
 
@@ -121,8 +124,10 @@ export default function RoomPage() {
   if (showModal)
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400">
-    <div className="bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg p-6 rounded w-full max-w-md text-center space-y-6">
-          <h2 className="text-xl font-bold dark:text-gray-100">Invalid Room Code</h2>
+        <div className="bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg p-6 rounded w-full max-w-md text-center space-y-6">
+          <h2 className="text-xl font-bold dark:text-gray-100">
+            Invalid Room Code
+          </h2>
           <p className="text-gray-600 dark:text-gray-300">
             Oops! This room does not exist. Please create a new room or use a
             valid code.
@@ -140,7 +145,7 @@ export default function RoomPage() {
   if (showJoinPrompt)
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400">
-    <div className="bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg p-6 rounded w-full max-w-md text-center space-y-4">
+        <div className="bg-white dark:bg-gray-900 dark:border-gray-700 shadow-lg p-6 rounded w-full max-w-md text-center space-y-4">
           <h2 className="text-xl font-bold dark:text-gray-100">Join Room</h2>
           <p className="text-gray-600 dark:text-gray-300">
             Enter your name to join this room and start tracking expenses
@@ -163,14 +168,14 @@ export default function RoomPage() {
       </div>
     );
 
-  if (!room) return <p>Loading room...</p>;
+  if (!room) return <Loading />;
 
   return (
     <div className="min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex justify-center dark:bg-gradient-to-br dark:from-gray-900 dark:via-purple-900 dark:to-black">
       <div className="w-full max-w-5xl lg:w-7/10 space-y-6">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-white dark:text-gray-100">
-            {room.name} {" "}
+            {room.name}{" "}
             {currentUser && (
               <span className="text-gray-200 text-lg dark:text-gray-300">
                 ({currentUser.name})
@@ -185,7 +190,8 @@ export default function RoomPage() {
           </button>
         </div>
         <p className="text-gray-200 mb-4 text-sm dark:text-gray-300">
-          Room Code: <span className="font-semibold dark:text-gray-100">{room.code}</span>
+          Room Code:{" "}
+          <span className="font-semibold dark:text-gray-100">{room.code}</span>
         </p>
 
         {/* Add Expense Form */}
@@ -193,7 +199,9 @@ export default function RoomPage() {
           className="mb-6 space-y-3 border p-4 rounded bg-white/90 backdrop-blur-md shadow-lg dark:bg-gray-900 dark:border-gray-700"
           onSubmit={addExpense}
         >
-          <h2 className="font-bold text-gray-800 mb-2 dark:text-gray-100">Add Expense</h2>
+          <h2 className="font-bold text-gray-800 mb-2 dark:text-gray-100">
+            Add Expense
+          </h2>
           <input
             type="text"
             placeholder="Description"
@@ -210,17 +218,19 @@ export default function RoomPage() {
           />
 
           <div className="space-y-1 border p-2 rounded-md dark:bg-gray-900 dark:border-gray-700">
-            <p className="font-bold text-gray-700 dark:text-gray-100">Select members to split:</p>
+            <p className="font-bold text-gray-700 dark:text-gray-100">
+              Select members to split:
+            </p>
             {room.members.map((m, idx) => (
               <label
-                key={m._id ? m._id.toString() : idx}
+                key={m.uuid ? m.uuid.toString() : idx}
                 className="flex items-center space-x-2 text-gray-700 dark:text-gray-100"
               >
                 <input
                   type="checkbox"
-                  value={m._id}
-                  checked={selectedMembers.includes(m._id)}
-                  onChange={() => toggleMember(m._id)}
+                  value={m.uuid}
+                  checked={selectedMembers.includes(m.uuid)}
+                  onChange={() => toggleMember(m.uuid)}
                 />
                 <span>{m.name}</span>
               </label>
@@ -231,7 +241,11 @@ export default function RoomPage() {
             Add Expense
           </button>
         </form>
-        <ExpensesList expenses={expenses} memberMap={memberMap} currentUser={currentUser}/>
+        <ExpensesList
+          expenses={expenses}
+          memberMap={memberMap}
+          currentUser={currentUser}
+        />
         <BalanceTable room={room} expenses={expenses} memberMap={memberMap} />
       </div>
     </div>
