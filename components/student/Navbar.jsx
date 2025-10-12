@@ -11,7 +11,7 @@ export default function StudentNavbar({ sidebarOpen, setSidebarOpen, onMenuClick
         <a href="/dashboard" className="hover:underline">Home</a>
         <a href="/profile" className="hover:underline">Profile</a>
         <a href="/settings" className="hover:underline">Settings</a>
-        <button onClick={() => signOut()}>Logout</button>
+        <button onClick={() => signOut({ callbackUrl: "/" })}>Logout</button>
       </div>
       {/* Hamburger for mobile */}
       <button

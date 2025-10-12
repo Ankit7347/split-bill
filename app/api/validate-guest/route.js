@@ -33,7 +33,7 @@ export async function POST(req, res) {
     });
     if (!guest) {
       // Invalid guest → don't overwrite localStorage
-      return NextResponse.json({ message: "Invalid guest", updateUser: true }, { status: 400 });
+      return NextResponse.json({ message: "Invalid guest", updateUser: true }, { status: 200 });
     }
 
     // Valid guest → return guest info
