@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { Eye, EyeOff, Home } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import Loading from "@/components/data-loading/Loading";
+import Loading from "@/components/Loading";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import Link from "next/link";

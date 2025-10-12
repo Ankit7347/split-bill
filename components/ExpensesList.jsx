@@ -47,16 +47,16 @@ export default function ExpensesList({ expenses, memberMap, currentUser }) {
 
   return (
     <div className="mb-6 bg-white/90 dark:bg-gray-900 dark:border-gray-700 backdrop-blur-md shadow-lg rounded p-4 border border-gray-200 dark:border-gray-700">
-      <h2 className="text-center font-bold mb-4 text-gray-800 dark:text-gray-100">Expenses</h2>
+      <h2 className="text-center font-bold mb-4 text-gray-900 dark:text-gray-100">Expenses</h2>
       {expenses.length === 0 && (
-        <p className="text-gray-600 dark:text-gray-300">No expenses yet</p>
+        <p className="text-gray-700 dark:text-gray-300">No expenses yet</p>
       )}
       <div className="space-y-8">
         {sortedLabels.map((label) => (
           <div key={label}>
             {/* Centered date or weekday for group */}
             <div className="flex justify-center mb-2">
-              <span className="text-sm font-semibold text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-800 rounded px-3 py-1 border border-gray-200 dark:border-gray-700">
+              <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800 rounded px-3 py-1 border border-gray-200 dark:border-gray-700">
                 {label}
               </span>
             </div>
@@ -71,20 +71,20 @@ export default function ExpensesList({ expenses, memberMap, currentUser }) {
                     <div
                       className={`max-w-xs md:max-w-md p-3 rounded-lg shadow border ${
                         isCurrentUser
-                          ? "bg-purple-100 dark:bg-purple-900 text-gray-800 dark:text-gray-100 border-purple-200 dark:border-purple-800"
-                          : "bg-blue-100 dark:bg-blue-900 text-gray-800 dark:text-gray-100 border-blue-200 dark:border-blue-800"
+                          ? "bg-purple-100 dark:bg-purple-900 text-gray-900 dark:text-gray-100 border-purple-200 dark:border-purple-800"
+                          : "bg-blue-100 dark:bg-blue-900 text-gray-900 dark:text-gray-100 border-blue-200 dark:border-blue-800"
                       }`}
                     >
                       {/* Member name at top */}
-                      <h3 className="text-sm font-semibold mb-1 dark:text-gray-100">
+                      <h3 className="text-sm font-semibold mb-1 text-gray-900 dark:text-gray-100">
                         {memberMap[ex.addedBy]}
                       </h3>
 
                       {/* Expense details */}
-                      <p className="text-sm dark:text-gray-100">
+                      <p className="text-sm text-gray-900 dark:text-gray-100">
                         <strong>{ex.description}</strong> - ₹{ex.amount.toFixed(2)}
                       </p>
-                      <p className="text-xs text-gray-600 dark:text-gray-300">
+                      <p className="text-xs text-gray-700 dark:text-gray-300">
                         Per Head: ₹{ex.perHead.toFixed(2)} <br />
                         Split among: {ex.splitAmong.map((id) => memberMap[id]).join(", ")}
                       </p>

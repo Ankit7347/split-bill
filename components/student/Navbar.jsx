@@ -1,5 +1,7 @@
 "use client";
 
+import { signOut } from "next-auth/react";
+
 export default function StudentNavbar({ sidebarOpen, setSidebarOpen, onMenuClick }) {
   return (
     <nav className="w-full bg-gray-900 text-white py-3 px-4 flex items-center justify-between shadow z-60 relative">
@@ -9,7 +11,7 @@ export default function StudentNavbar({ sidebarOpen, setSidebarOpen, onMenuClick
         <a href="/dashboard" className="hover:underline">Home</a>
         <a href="/profile" className="hover:underline">Profile</a>
         <a href="/settings" className="hover:underline">Settings</a>
-        <a href="/logout" className="hover:underline">Logout</a>
+        <button onClick={() => signOut()}>Logout</button>
       </div>
       {/* Hamburger for mobile */}
       <button

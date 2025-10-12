@@ -12,7 +12,6 @@ export default function RoomBill({ user, expenses, billType = "Room" }) {
   const [gstFormSaved, setGstFormSaved] = useState(false);
 
   // Calculate totals
-  console.log(expenses)
   const subtotal = expenses.reduce((sum, e) => sum + e.amount, 0);
   const gst = gstMode ? subtotal * (gstDetails.taxRate / 100) : 0;
   const serviceCharge = gstMode ? subtotal * (gstDetails.serviceCharge / 100) : 0;

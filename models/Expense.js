@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const ExpenseSchema = new mongoose.Schema({
-  roomId: { type: mongoose.Schema.Types.ObjectId, ref: "Room" },
+  roomId: { type: String, ref: "Room" },
   addedBy: { type: String, ref: "User" },
   description: String,
   amount: Number,

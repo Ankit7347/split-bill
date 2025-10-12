@@ -1,28 +1,34 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import BalanceTable from "@/components/BalanceTable";
 import ExpensesList from "@/components/ExpensesList";
-import Loading from "@/components/data-loading/Loading";
+import Loading from "@/components/Loading";
+import Sidebar from "@/components/student/Sidebar";
+import StudentNavbar from "@/components/student/Navbar";
+import StudentFooter from "@/components/student/Footer";
 
 export default function RoomPage() {
+  const { data: session, status } = useSession();
   const { code } = useParams();
   const [room, setRoom] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [form, setForm] = useState({ description: "", amount: "" });
   const [selectedMembers, setSelectedMembers] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null); // guestId + name
-  const [showModal, setShowModal] = useState(false); // invalid room
-  const [showJoinPrompt, setShowJoinPrompt] = useState(false); // new user not in room
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [showJoinPrompt, setShowJoinPrompt] = useState(false);
   const [guestName, setGuestName] = useState(() =>
     typeof window !== "undefined" ? localStorage.getItem("guestName") || "" : ""
   );
   const [guestId, setGuestId] = useState("");
   const [memberMap, setMemberMap] = useState({});
-
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const roomUrl = typeof window !== "undefined" ? window.location.href : "";
 
+  // build member map
   useEffect(() => {
     if (!room) return;
     const map = {};
@@ -32,6 +38,7 @@ export default function RoomPage() {
     setMemberMap(map);
   }, [room]);
 
+  // fetch room data
   useEffect(() => {
     const guestId = localStorage.getItem("guestId");
     const guestName = localStorage.getItem("guestName");
@@ -63,7 +70,8 @@ export default function RoomPage() {
   }, [code]);
 
   const handleJoinRoom = async () => {
-    if (!guestName || guestName == "") return alert("Please enter your name");
+    if (!guestName || guestName.trim() === "")
+      return alert("Please enter your name");
 
     const res = await fetch("/api/room/join", {
       method: "POST",
@@ -95,13 +103,12 @@ export default function RoomPage() {
   const addExpense = async (e) => {
     e.preventDefault();
     if (!form.description || !form.amount)
-      return alert("Please fill all fields");
-
+      return alert("Please fill all fields");    
     const res = await fetch("/api/expense/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        roomId: room.uuid,
+        roomId: room.code,
         addedBy: currentUser.id,
         description: form.description,
         amount: Number(form.amount),
@@ -121,6 +128,7 @@ export default function RoomPage() {
     alert("Room URL copied to clipboard!");
   };
 
+  // ---- UI States ----
   if (showModal)
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400">
@@ -133,7 +141,7 @@ export default function RoomPage() {
             valid code.
           </p>
           <button
-            onClick={() => (window.location.href = "/")} // Navigate to landing page
+            onClick={() => (window.location.href = "/")}
             className="bg-purple-500 text-white p-3 rounded w-full hover:bg-purple-600 transition font-semibold dark:bg-purple-700 dark:hover:bg-purple-800"
           >
             Create New Room
@@ -154,7 +162,7 @@ export default function RoomPage() {
           <input
             type="text"
             placeholder="Your Name"
-            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition bg-white text-gray-900 border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
             value={guestName}
             onChange={(e) => setGuestName(e.target.value)}
           />
@@ -170,7 +178,8 @@ export default function RoomPage() {
 
   if (!room) return <Loading />;
 
-  return (
+  // ---- Main Layout ----
+  const content = (
     <div className="min-h-screen p-6 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 flex justify-center dark:bg-gradient-to-br dark:from-gray-900 dark:via-purple-900 dark:to-black">
       <div className="w-full max-w-5xl lg:w-7/10 space-y-6">
         <div className="flex justify-between items-center mb-4">
@@ -194,7 +203,7 @@ export default function RoomPage() {
           <span className="font-semibold dark:text-gray-100">{room.code}</span>
         </p>
 
-        {/* Add Expense Form */}
+        {/* Expense Form */}
         <form
           className="mb-6 space-y-3 border p-4 rounded bg-white/90 backdrop-blur-md shadow-lg dark:bg-gray-900 dark:border-gray-700"
           onSubmit={addExpense}
@@ -205,14 +214,14 @@ export default function RoomPage() {
           <input
             type="text"
             placeholder="Description"
-            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition bg-white text-gray-900 border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
           <input
             type="number"
             placeholder="Amount"
-            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+            className="border p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 transition bg-white text-gray-900 border-gray-300 dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
             value={form.amount}
             onChange={(e) => setForm({ ...form, amount: e.target.value })}
           />
@@ -250,4 +259,25 @@ export default function RoomPage() {
       </div>
     </div>
   );
+
+  // ---- If next-auth session is valid, wrap with layout ----
+  if (status === "authenticated" && session?.user) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-black text-white">
+        <StudentNavbar
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+        />
+        <div className="flex flex-1 w-full">
+          <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+          <main className="flex-1">{content}</main>
+        </div>
+        <StudentFooter />
+      </div>
+    );
+  }
+
+  // ---- Otherwise, show normal layout ----
+  return content;
 }
