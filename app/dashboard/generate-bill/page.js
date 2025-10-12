@@ -28,7 +28,6 @@ export default function GenerateBillPage() {
 
         const json = await res.json();
         const user = session.user; // <-- user from NextAuth session
-        console.log(user.id)
         // Filter expenses added by this user
         const userExpenses = json.expenses.filter(
           (e) =>

@@ -28,7 +28,6 @@ export default function GuestValidator() {
         }
 
         const data = await res.json();
-        console.log(data);
         
         // Use updateUser field from API response
         if (data?.updateUser) {
