@@ -1,41 +1,54 @@
 "use client";
 
 import { useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 export default function GuestValidator() {
+  const { data: session, status } = useSession();
+
   useEffect(() => {
     const validateGuest = async () => {
       try {
         const guestId = localStorage.getItem("guestId");
         const guestName = localStorage.getItem("guestName");
 
-        // If no guestId/name, nothing to validate
-        if (!guestId || !guestName) return;
+        // If no guestId/name, nothing to validate yet
+        if (!guestId || !guestName) {
+          // but if we have a session, use that
+          if (status === "authenticated" && session?.user) {
+            localStorage.setItem("guestId", session.user.id);
+            localStorage.setItem("guestName", session.user.name || "User");
+          }
+          return;
+        }
 
-        // Hit backend API to validate token / guest
+        // Validate guest on backend
         const res = await fetch("/api/validate-guest", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ guestId, guestName }),
-          credentials: "include", // to send cookies (next-auth session)
+          credentials: "include",
         });
 
+        // If validation failed → fall back to session
         if (!res.ok) {
-          // Invalid guest or token → do nothing (keep guest as-is)
+          if (status === "authenticated" && session?.user) {
+            localStorage.setItem("guestId", session.user.id);
+            localStorage.setItem("guestName", session.user.name || "User");
+            console.log("Guest invalid → replaced with session user.");
+          } else {
+            console.warn("Guest invalid and no session user available.");
+          }
           return;
         }
 
         const data = await res.json();
-        
-        // Use updateUser field from API response
-        if (data?.updateUser) {
-          // If updateUser is true, update localStorage with new guest/user info
-          if (data?.user) {
-            localStorage.setItem("guestId", data.user.uuid);
-            localStorage.setItem("guestName", data.user.name);
-          }
+
+        // If backend says to update guest info
+        if (data?.updateUser && data?.user) {
+          localStorage.setItem("guestId", data.user.uuid);
+          localStorage.setItem("guestName", data.user.name);
+          console.log("Guest info updated from backend response.");
         }
       } catch (err) {
         console.error("Guest validation error:", err);
@@ -43,7 +56,7 @@ export default function GuestValidator() {
     };
 
     validateGuest();
-  }, []);
+  }, [session, status]);
 
   return null; // invisible component
 }
