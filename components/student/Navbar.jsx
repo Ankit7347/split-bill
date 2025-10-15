@@ -9,8 +9,8 @@ export default function StudentNavbar({ sidebarOpen, setSidebarOpen, onMenuClick
       {/* Desktop links */}
       <div className="hidden md:flex space-x-4">
         <a href="/dashboard" className="hover:underline">Home</a>
-        <a href="/profile" className="hover:underline">Profile</a>
-        <a href="/settings" className="hover:underline">Settings</a>
+        <a href="/contact" className="hover:underline">Contact Us</a>
+        <a href="/dashboard/settings" className="hover:underline">Settings</a>
         <button onClick={() => signOut({ callbackUrl: "/" })}>Logout</button>
       </div>
       {/* Hamburger for mobile */}

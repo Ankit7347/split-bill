@@ -9,10 +9,17 @@ const protectedRoutes = ["/admin","/dashboard"];
 export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
+  
   // Get session token from cookies
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-
+  
   // ✅ Redirect logged-in users away from login/register
+  // Redirect /guest to /dashboard
+  if (token && pathname === "/guest") {
+    const url = req.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
+  }
   if (token && authPages.includes(pathname)) {
     const url = req.nextUrl.clone();
     url.pathname = "/dashboard";
@@ -33,5 +40,5 @@ export async function middleware(req) {
 
 // 👇 This ensures middleware runs for specific paths
 export const config = {
-  matcher: ["/admin/:path*","/dashboard/:path*", "/login", "/register"],
+  matcher: ["/admin/:path*","/dashboard/:path*", "/login", "/register", "/guest"],
 };
